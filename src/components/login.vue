@@ -54,17 +54,7 @@
 <script>
 export default {
   data() {
-       // 验证邮箱的规则
-    var checkEmail = (rule, value, cb) => {
-      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
-
-      if (regEmail.test(value)) {
-        // 合法邮箱
-        return cb()
-      }
-
-      cb(new Error('请输入合法的邮箱'))
-    }
+     
     return {
       loginForm: {
         account: "",
@@ -74,7 +64,7 @@ export default {
         account: [
           { required: true, message: '请输入用户名（邮箱）', trigger: 'blur' },
           { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' },
-           { validator: checkEmail, trigger: 'blur' }
+          
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
@@ -85,6 +75,18 @@ export default {
   },
 
   methods: {
+    async login(){
+     const {data: res} = await this.$http.post('/api/user/login',this.loginForm)
+     console.log(res);
+     if(res.code == 200){
+        this.$message.success("登录成功！")
+        this.$router.push('/first')
+        sessionStorage.setItem('token',res.data.token)
+      }
+      if(res.code == 100){
+      this.$message.error("登录失败！")
+    }
+    }
     //     register() {
     //   this.$router.push('/register')
     // },
