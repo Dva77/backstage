@@ -2,7 +2,7 @@
   <div>
     <el-card>
       <div class="title">求助记录</div>
-
+      <!-- 搜索框 -->
       <el-row :gutter="20">
         <el-col
           :span="6"
@@ -19,41 +19,42 @@
               <el-button
                 slot="append"
                 icon="el-icon-search"
+                @click="searchName()"
               ></el-button>
             </el-input>
           </div>
         </el-col>
       </el-row>
-
+      <!-- 表格 -->
       <el-table
-        :data="tableData"
+        :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
         style="width:80%"
         class="table"
         border
       >
         <el-table-column
-          prop="date"
+          prop="updated_at"
           label="时间"
-          align="center"
         ></el-table-column>
         <el-table-column
-          prop="content"
+          prop="help_article"
           label="求助内容"
         ></el-table-column>
         <el-table-column
-          prop="person"
+          prop="help_name"
           label="求助人"
           align="center"
         ></el-table-column>
         <el-table-column
           label="操作"
-          width="150"
+          width="120"
           align="center"
         >
-          <template>
+          <template slot-scope="scope">
             <el-button
               size="mini"
               type="danger"
+              @click="removeUserById(scope.row.userid,scope.row.created_at)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -63,10 +64,11 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page.sync="currentPage"
-          :page-size="100"
-          layout="prev, pager, next, jumper"
-          :total="1000"
+          :current-page="currentPage"
+          :page-sizes="[5,10]"
+          :page-size="pagesize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
         >
         </el-pagination>
       </div>
@@ -79,33 +81,67 @@ export default {
   data() {
     return {
       input: "",
-      tableData: [
-        {
-          date: "2016-05-02",
-          content: "aaaaaa",
-          person: "yy",
-        },
-        {
-          date: "2016-05-04",
-          content: "bbbbbbb",
-          person: "ww",
-        },
-        {
-          date: "2016-05-01",
-          content: "cccccccc",
-          person: "zz",
-        },
-      ],
-      currentPage: 5,
+      tableData: [],
+      currentPage: 1,
+      pagesize: 10,
+      total: 0,
     };
   },
-
+  created() {
+    this.getData();
+  },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      this.pagesize = val;
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+    },
+    async getData() {
+      const { data: res } = await this.$http.post("/api/back/helpallqiuzhu");
+      if (res.code == 200) {
+        this.tableData = res.data;
+        this.total = res.data.length;
+      }
+    },
+    async searchName() {
+      this.currentPage = 1;
+      const help_name = this.input;
+      const { data: res } = await this.$http.post("/api/back/helpnameqiuzhu", {
+        help_name: help_name,
+      });
+      if (res.code == 200) {
+        this.tableData = "";
+        this.tableData = res.data;
+        this.input = "";
+      }
+    },
+    async removeUserById(id,time) {
+      const confirmResult = await this.$confirm(
+        "是否要删除该用户的求助动态?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+
+      //如果用户确认删除，则返回值为字符串
+      if (confirmResult !== "confirm") {
+        return this.$message.info("已取消删除");
+      }
+      const { data: res } = await this.$http.post("/api/back/helpdelete", {
+        userid: id,
+        created_at: time,
+      });
+      
+      if (res.code == 200) {
+        this.$message.success("已成功删除！");
+        this.getData();
+      } else {
+        return this.$message.error("删除失败!");
+      }
     },
   },
 };

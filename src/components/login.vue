@@ -54,37 +54,37 @@
 <script>
 export default {
   data() {
-       // 验证邮箱的规则
-    var checkEmail = (rule, value, cb) => {
-      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
-
-      if (regEmail.test(value)) {
-        // 合法邮箱
-        return cb()
-      }
-
-      cb(new Error('请输入合法的邮箱'))
-    }
-    return {
+       return {
       loginForm: {
         account: "",
         password: "",
       },
       loginFormRules: {
         account: [
-          { required: true, message: '请输入用户名（邮箱）', trigger: 'blur' },
-          { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' },
-           { validator: checkEmail, trigger: 'blur' }
+          { required: true, message: '请输入账号', trigger: 'blur' },
+          { min: 3, max: 15, message: '长度在 4 到 12 个字符', trigger: 'blur' },
+           
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+          { min: 4, max: 12, message: '长度在 4 到 12 个字符', trigger: 'blur' }
         ]
       }
     };
   },
 
   methods: {
+    login() {
+        this.$refs.loginFormRef.validate(async valid=>{
+          if(!valid) return;
+          const {data:res} = await this.$http.post('/api/user/login',this.loginForm);
+          if(res.code !== 200) return this.$message.error('登录失败');
+          this.$message.success('登录成功');
+          window.sessionStorage.setItem("token",res.data.token);
+          //跳转到后台主页
+          this.$router.push("/home");
+        });
+      }
     //     register() {
     //   this.$router.push('/register')
     // },
