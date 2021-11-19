@@ -8,8 +8,10 @@ import './assets/global.css'
 // import './assets/fonts/iconfont.css'
 // import axios from 'axios'
 // Vue.prototype.$http = axios
+import axios from 'axios'
+Vue.prototype.$http = axios
 Vue.config.productionTip = false
-// axios.defaults.baseURL = 'http://gkd.aztop.cn'
+axios.defaults.baseURL='http://gkd.aztop.cn'
 Vue.use(ElementUI);
 
 new Vue({
