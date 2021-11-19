@@ -61,9 +61,9 @@ export default {
       },
       loginFormRules: {
         account: [
-          { required: true, message: '请输入账号', trigger: 'blur' },
-          { min: 3, max: 15, message: '长度在 4 到 12 个字符', trigger: 'blur' },
-           
+          { required: true, message: '请输入用户名（邮箱）', trigger: 'blur' },
+          { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' },
+          
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
@@ -72,19 +72,19 @@ export default {
       }
     };
   },
-
   methods: {
-    login() {
-        this.$refs.loginFormRef.validate(async valid=>{
-          if(!valid) return;
-          const {data:res} = await this.$http.post('/api/user/login',this.loginForm);
-          if(res.code !== 200) return this.$message.error('登录失败');
-          this.$message.success('登录成功');
-          window.sessionStorage.setItem("token",res.data.token);
-          //跳转到后台主页
-          this.$router.push("/home");
-        });
+    async login(){
+     const {data: res} = await this.$http.post('/api/user/login',this.loginForm)
+     console.log(res);
+     if(res.code == 200){
+        this.$message.success("登录成功！")
+        this.$router.push('/first')
+        sessionStorage.setItem('token',res.data.token)
       }
+      if(res.code == 100){
+      this.$message.error("登录失败！")
+    }
+    }
     //     register() {
     //   this.$router.push('/register')
     // },
