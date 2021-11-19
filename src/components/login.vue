@@ -54,8 +54,7 @@
 <script>
 export default {
   data() {
-     
-    return {
+       return {
       loginForm: {
         account: "",
         password: "",
@@ -68,12 +67,11 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+          { min: 4, max: 12, message: '长度在 4 到 12 个字符', trigger: 'blur' }
         ]
       }
     };
   },
-
   methods: {
     async login(){
      const {data: res} = await this.$http.post('/api/user/login',this.loginForm)

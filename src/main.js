@@ -14,6 +14,15 @@ Vue.config.productionTip = false
 axios.defaults.baseURL='http://gkd.aztop.cn'
 Vue.use(ElementUI);
 
+axios.defaults.baseURL = 'http://gkd.aztop.cn'
+axios.interceptors.request.use(config => {
+    //console.log(config);
+    const token = sessionStorage.getItem("token")
+    config.headers.Authorization = `Bearer ${token}`
+    return config
+}, (err) => {
+    return err
+})
 new Vue({
     router,
     render: h => h(App)
