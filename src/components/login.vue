@@ -3,7 +3,7 @@
     <div class="login_box">
       <div class="logo">
         <!-- <img src="https://gitee.com/zj095/cloudimg/raw/master/202110141041247.png" alt=""> -->
-        <h2>钉钉朋友圈登录</h2>
+        <h2>钉钉朋友圈后台</h2>
       </div>
       <el-form
         ref="loginFormRef"
@@ -54,7 +54,12 @@
 <script>
 export default {
   data() {
+<<<<<<< HEAD
        return {
+=======
+     
+    return {
+>>>>>>> 2f5ee6e (zjfirst)
       loginForm: {
         account: "",
         password: "",
